@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Budget | Smart Expense Tracker{% endblock %}
+{% block page_title %}Monthly Budget{% endblock %}
+{% block content %}
+<section class="panel narrow-panel">
+    <form method="post" class="row g-3 align-items-end">
+        {{ form.hidden_tag() }}
+        <div class="col-md-4">{{ form.month.label(class="form-label") }}{{ form.month(class="form-select") }}</div>
+        <div class="col-md-4">{{ form.year.label(class="form-label") }}{{ form.year(class="form-select") }}</div>
+        <div class="col-md-4">{{ form.amount.label(class="form-label") }}{{ form.amount(class="form-control") }}</div>
+        <div class="col-12">{{ form.submit(class="btn btn-primary") }}</div>
+    </form>
+</section>
+<section class="panel mt-4">
+    <div class="panel-heading"><h2>Saved Budgets</h2></div>
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead><tr><th>Month</th><th>Year</th><th class="text-end">Amount</th></tr></thead>
+            <tbody>
+            {% for budget in budgets %}
+                <tr><td>{{ budget.month }}</td><td>{{ budget.year }}</td><td class="text-end">Rs. {{ "%.2f"|format(budget.amount) }}</td></tr>
+            {% else %}
+                <tr><td colspan="3" class="text-center text-muted py-4">No budgets saved yet.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

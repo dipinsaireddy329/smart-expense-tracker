@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Dashboard | Smart Expense Tracker{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block content %}
+<section class="stats-grid">
+    <article class="stat-card"><span>Total Expenses</span><strong>Rs. {{ "%.2f"|format(total_expenses) }}</strong><i class="fa-solid fa-sack-dollar"></i></article>
+    <article class="stat-card"><span>Monthly Expenses</span><strong>Rs. {{ "%.2f"|format(monthly_expenses) }}</strong><i class="fa-solid fa-calendar-days"></i></article>
+    <article class="stat-card"><span>Monthly Budget</span><strong>Rs. {{ "%.2f"|format(budget_amount) }}</strong><i class="fa-solid fa-bullseye"></i></article>
+    <article class="stat-card {{ 'danger' if remaining_budget < 0 else '' }}"><span>Remaining Budget</span><strong>Rs. {{ "%.2f"|format(remaining_budget) }}</strong><i class="fa-solid fa-piggy-bank"></i></article>
+</section>
+
+<section class="dashboard-grid mt-4">
+    <div class="panel">
+        <div class="panel-heading"><h2>Category-wise Spending</h2></div>
+        <canvas id="categoryPie" data-labels='{{ chart_categories | map(attribute="name") | list | tojson }}' data-values='{{ chart_categories | map(attribute="total") | list | tojson }}' data-colors='{{ chart_categories | map(attribute="color") | list | tojson }}'></canvas>
+    </div>
+    <div class="panel">
+        <div class="panel-heading"><h2>Monthly Trend {{ today.year }}</h2></div>
+        <canvas id="monthlyBar" data-labels='{{ bar_series["labels"] | tojson }}' data-values='{{ bar_series["values"] | tojson }}'></canvas>
+    </div>
+</section>
+
+<section class="panel mt-4">
+    <div class="panel-heading">
+        <h2>Recent Transactions</h2>
+        <a class="btn btn-sm btn-primary" href="{{ url_for('expenses.add_expense') }}"><i class="fa-solid fa-plus"></i> Add</a>
+    </div>
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead><tr><th>Date</th><th>Title</th><th>Category</th><th>Method</th><th class="text-end">Amount</th></tr></thead>
+            <tbody>
+            {% for expense in recent_transactions %}
+                <tr>
+                    <td>{{ expense.expense_date.strftime("%d %b %Y") }}</td>
+                    <td>{{ expense.title }}</td>
+                    <td><span class="category-dot" style="background: {{ expense.category.color }}"></span>{{ expense.category.name }}</td>
+                    <td>{{ expense.payment_method }}</td>
+                    <td class="text-end fw-semibold">Rs. {{ "%.2f"|format(expense.amount) }}</td>
+                </tr>
+            {% else %}
+                <tr><td colspan="5" class="text-center text-muted py-4">No transactions yet.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

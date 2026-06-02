@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Admin Panel | Smart Expense Tracker{% endblock %}
+{% block page_title %}Admin Panel{% endblock %}
+{% block content %}
+<section class="stats-grid">
+    <article class="stat-card"><span>Total Users</span><strong>{{ total_users }}</strong><i class="fa-solid fa-users"></i></article>
+    <article class="stat-card"><span>Total Records</span><strong>{{ total_expenses }}</strong><i class="fa-solid fa-database"></i></article>
+    <article class="stat-card"><span>Tracked Spending</span><strong>Rs. {{ "%.2f"|format(total_amount) }}</strong><i class="fa-solid fa-chart-pie"></i></article>
+</section>
+<section class="dashboard-grid mt-4">
+    <div class="panel">
+        <div class="panel-heading"><h2>Top Users</h2></div>
+        <div class="list-group list-group-flush">
+            {% for name, email, spent in top_users %}
+                <div class="list-group-item d-flex justify-content-between align-items-center px-0"><div><strong>{{ name }}</strong><small class="d-block text-muted">{{ email }}</small></div><span>Rs. {{ "%.2f"|format(spent) }}</span></div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="panel">
+        <div class="panel-heading"><h2>User Management</h2></div>
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead><tr><th>Name</th><th>Email</th><th>Role</th><th class="text-end">Actions</th></tr></thead>
+                <tbody>
+                {% for user in users %}
+                    <tr>
+                        <td>{{ user.name }}</td><td>{{ user.email }}</td><td><span class="badge text-bg-{{ 'primary' if user.is_admin else 'secondary' }}">{{ user.role }}</span></td>
+                        <td class="text-end">
+                            {% if user.id != current_user.id %}
+                            <form class="d-inline" method="post" action="{{ url_for('admin.toggle_admin', user_id=user.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-outline-secondary btn-sm" type="submit"><i class="fa-solid fa-user-gear"></i></button></form>
+                            <form class="d-inline" method="post" action="{{ url_for('admin.delete_user', user_id=user.id) }}" onsubmit="return confirm('Delete this user?')"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-outline-danger btn-sm" type="submit"><i class="fa-solid fa-trash"></i></button></form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+{% endblock %}

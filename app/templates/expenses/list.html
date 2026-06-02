@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Expenses | Smart Expense Tracker{% endblock %}
+{% block page_title %}Expenses{% endblock %}
+{% block content %}
+<section class="panel">
+    <form class="row g-3 align-items-end" method="get">
+        <div class="col-md-4">{{ form.query.label(class="form-label") }}{{ form.query(class="form-control", placeholder="Search title, note, category") }}</div>
+        <div class="col-md-2">{{ form.category_id.label(class="form-label") }}{{ form.category_id(class="form-select") }}</div>
+        <div class="col-md-2">{{ form.month.label(class="form-label") }}{{ form.month(class="form-select") }}</div>
+        <div class="col-md-2">{{ form.year.label(class="form-label") }}{{ form.year(class="form-select") }}</div>
+        <div class="col-md-2 d-grid"><button class="btn btn-primary" type="submit"><i class="fa-solid fa-magnifying-glass"></i> Search</button></div>
+    </form>
+</section>
+<section class="panel mt-4">
+    <div class="panel-heading">
+        <h2>All Expenses</h2>
+        <a class="btn btn-primary btn-sm" href="{{ url_for('expenses.add_expense') }}"><i class="fa-solid fa-plus"></i> Add Expense</a>
+    </div>
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead><tr><th>Date</th><th>Title</th><th>Category</th><th>Payment</th><th class="text-end">Amount</th><th class="text-end">Actions</th></tr></thead>
+            <tbody>
+            {% for expense in expenses %}
+                <tr>
+                    <td>{{ expense.expense_date.strftime("%d %b %Y") }}</td>
+                    <td><strong>{{ expense.title }}</strong><small class="d-block text-muted">{{ expense.notes or "" }}</small></td>
+                    <td><span class="category-dot" style="background: {{ expense.category.color }}"></span>{{ expense.category.name }}</td>
+                    <td>{{ expense.payment_method }}</td>
+                    <td class="text-end fw-semibold">Rs. {{ "%.2f"|format(expense.amount) }}</td>
+                    <td class="text-end">
+                        <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('expenses.edit_expense', expense_id=expense.id) }}"><i class="fa-solid fa-pen"></i></a>
+                        <form class="d-inline" method="post" action="{{ url_for('expenses.delete_expense', expense_id=expense.id) }}" onsubmit="return confirm('Delete this expense?')">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button class="btn btn-outline-danger btn-sm" type="submit"><i class="fa-solid fa-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="6" class="text-center text-muted py-4">No matching expenses found.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}
