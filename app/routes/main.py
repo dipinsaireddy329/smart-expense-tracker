@@ -33,6 +33,12 @@ def dashboard():
     chart_categories = category_totals(current_user.id, month, year)
     bar_series = monthly_series(current_user.id, year)
 
+    today = date.today()
+    days_in_month = today.day if (today.month == month and today.year == year) else 30
+    daily_average = money(float(monthly_expenses) / days_in_month) if days_in_month > 0 else money(0)
+    budget_percentage = min(int((float(monthly_expenses) / float(budget_amount) * 100)), 100) if budget_amount > 0 else 0
+    top_category = chart_categories[0] if chart_categories else None
+
     return render_template(
         "dashboard.html",
         total_expenses=total_expenses,
@@ -42,5 +48,8 @@ def dashboard():
         recent_transactions=recent_transactions,
         chart_categories=chart_categories,
         bar_series=bar_series,
-        today=date.today(),
+        today=today,
+        daily_average=daily_average,
+        budget_percentage=budget_percentage,
+        top_category=top_category,
     )

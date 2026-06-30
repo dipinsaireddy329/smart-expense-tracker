@@ -17,11 +17,18 @@ class Config:
     MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD", "")
     MYSQL_DATABASE = os.getenv("MYSQL_DATABASE", "smart_expense_tracker")
 
-    encoded_password = quote_plus(MYSQL_PASSWORD)
-    SQLALCHEMY_DATABASE_URI = os.getenv(
-        "DATABASE_URL",
-        f"mysql+pymysql://{MYSQL_USER}:{encoded_password}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DATABASE}",
-    )
+    if os.getenv("VERCEL") == "1" and not os.getenv("DATABASE_URL"):
+        SQLALCHEMY_DATABASE_URI = "sqlite:////tmp/smart_expense_tracker.db"
+    else:
+        db_url = os.getenv("DATABASE_URL")
+        if db_url:
+            if db_url.startswith("postgres://"):
+                db_url = db_url.replace("postgres://", "postgresql://", 1)
+            SQLALCHEMY_DATABASE_URI = db_url
+        else:
+            encoded_password = quote_plus(MYSQL_PASSWORD)
+            SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{MYSQL_USER}:{encoded_password}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DATABASE}"
+
 
 
 class DevelopmentConfig(Config):

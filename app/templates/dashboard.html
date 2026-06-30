@@ -9,6 +9,66 @@
     <article class="stat-card {{ 'danger' if remaining_budget < 0 else '' }}"><span>Remaining Budget</span><strong>Rs. {{ "%.2f"|format(remaining_budget) }}</strong><i class="fa-solid fa-piggy-bank"></i></article>
 </section>
 
+<section class="panel mt-4">
+    <div class="row align-items-center">
+        <!-- Budget Progress Bar -->
+        <div class="col-md-6 mb-4 mb-md-0">
+            <h3 class="h6 eyebrow mb-3">Monthly Budget Utilization</h3>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="fw-bold">{{ budget_percentage }}% Spent</span>
+                {% if remaining_budget < 0 %}
+                    <span class="badge bg-danger">Over Budget</span>
+                {% elif budget_percentage >= 80 %}
+                    <span class="badge bg-warning text-dark">Approaching Limit</span>
+                {% elif budget_amount == 0 %}
+                    <span class="badge bg-secondary">No Budget Set</span>
+                {% else %}
+                    <span class="badge bg-success">On Track</span>
+                {% endif %}
+            </div>
+            <div class="progress" style="height: 12px; border-radius: 6px; background-color: var(--line);">
+                <div class="progress-bar {% if remaining_budget < 0 %}bg-danger{% elif budget_percentage >= 80 %}bg-warning{% else %}bg-primary{% endif %}" 
+                     role="progressbar" 
+                     style="width: {{ budget_percentage }}%; border-radius: 6px; transition: width 0.6s ease;" 
+                     aria-valuenow="{{ budget_percentage }}" 
+                     aria-valuemin="0" 
+                     aria-valuemax="100"></div>
+            </div>
+            <small class="text-muted d-block mt-2">
+                {% if budget_amount > 0 %}
+                    You have spent Rs. {{ "%.2f"|format(monthly_expenses) }} of your Rs. {{ "%.2f"|format(budget_amount) }} monthly budget.
+                {% else %}
+                    Set a monthly budget to track your utilization here!
+                {% endif %}
+            </small>
+        </div>
+        
+        <!-- Quick Insights -->
+        <div class="col-md-3 mb-3 mb-md-0 border-start ps-4">
+            <h3 class="h6 eyebrow mb-3">Daily Average</h3>
+            <div class="d-flex align-items-baseline">
+                <strong class="h4 mb-0 fw-extrabold" style="color: var(--ink);">Rs. {{ "%.2f"|format(daily_average) }}</strong>
+            </div>
+            <small class="text-muted d-block mt-2">Spent daily in {{ today.strftime('%B') }}</small>
+        </div>
+        
+        <div class="col-md-3 border-start ps-4">
+            <h3 class="h6 eyebrow mb-3">Top Category</h3>
+            <div class="d-flex align-items-center">
+                {% if top_category %}
+                    <span class="category-dot" style="background: {{ top_category.color }}; width: 12px; height: 12px;"></span>
+                    <strong class="h5 mb-0 fw-bold" style="color: var(--ink);">{{ top_category.name }}</strong>
+                    <span class="text-muted ms-2">(Rs. {{ "%.2f"|format(top_category.total) }})</span>
+                {% else %}
+                    <span class="text-muted">None</span>
+                {% endif %}
+            </div>
+            <small class="text-muted d-block mt-2">Highest spending area</small>
+        </div>
+    </div>
+</section>
+
+
 <section class="dashboard-grid mt-4">
     <div class="panel">
         <div class="panel-heading"><h2>Category-wise Spending</h2></div>

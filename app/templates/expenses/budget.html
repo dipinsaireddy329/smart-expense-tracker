@@ -17,8 +17,9 @@
         <table class="table align-middle">
             <thead><tr><th>Month</th><th>Year</th><th class="text-end">Amount</th></tr></thead>
             <tbody>
+            {% set month_names = ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"] %}
             {% for budget in budgets %}
-                <tr><td>{{ budget.month }}</td><td>{{ budget.year }}</td><td class="text-end">Rs. {{ "%.2f"|format(budget.amount) }}</td></tr>
+                <tr><td>{{ month_names[budget.month] }}</td><td>{{ budget.year }}</td><td class="text-end">Rs. {{ "%.2f"|format(budget.amount) }}</td></tr>
             {% else %}
                 <tr><td colspan="3" class="text-center text-muted py-4">No budgets saved yet.</td></tr>
             {% endfor %}

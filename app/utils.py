@@ -67,7 +67,13 @@ def monthly_series(user_id, year):
         .group_by(extract("month", Expense.expense_date))
         .all()
     )
-    totals = {int(month): float(total) for month, total in rows}
+    totals = {}
+    for month, total in rows:
+        if month is not None:
+            try:
+                totals[int(month)] = float(total or 0)
+            except (ValueError, TypeError):
+                pass
     return {
         "labels": [month_name[i][:3] for i in range(1, 13)],
         "values": [totals.get(i, 0) for i in range(1, 13)],
